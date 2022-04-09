@@ -4,8 +4,9 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
-from MetricsModel.models import MetricList
-from MetricsModel.serializers import MetricListSerializer
+from MetricsModel.factory.status_code import StatusCode
+from MetricsModel.models import MetricList, MetaInfoModel
+from MetricsModel.serializers import MetricListSerializer, MetaInfoSerializer
 
 
 @csrf_exempt
@@ -18,6 +19,47 @@ def metric_list(request):
         }
     }
     return JsonResponse(return_data, safe=False)
+
+
+def get_meta_info(type=MetaInfoModel.MetaType):
+    """
+    获取元数据信息
+    :arg type 元数据类型
+    """
+    meta_business = MetaInfoModel.objects.filter(type=type)
+    serializer = MetaInfoSerializer(meta_business, many=True)
+    data = serializer.data
+    return JsonResponse({
+        "data": {
+            "list": data
+        },
+        "status": StatusCode.success,
+        "message": "OK",
+    })
+
+
+def meta(request):
+    type = request.GET.get("type")
+    if type == "business":
+        return get_meta_info(MetaInfoModel.MetaType.business)
+    elif type == "metrics":
+        return get_meta_info(MetaInfoModel.MetaType.metrics)
+    elif type == "time_cycle":
+        return get_meta_info(MetaInfoModel.MetaType.time_cycle)
+    return JsonResponse({
+        "data": {
+            "list": [{
+                'key': 'basic',
+                'value': '基础'
+            }, {
+                'key': 'ssp',
+                'value': 'SSP'
+            }, {
+                'key': 'md',
+                'value': '聚合'
+            }]
+        }
+    })
 
 
 @csrf_exempt

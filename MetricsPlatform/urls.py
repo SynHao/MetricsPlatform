@@ -21,6 +21,12 @@ from Sql import views as sql_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('meta/', views.meta),
+
+
+
+
+
     path('metric_list', views.metric_list),
     path('business_type', views.business_type),
     path('metric_type', views.metric_field),
