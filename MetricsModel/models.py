@@ -42,11 +42,14 @@ class MetaInfoModel(models.Model):
         business = 1
         metrics = 2
         time_cycle = 3
+        dim = 4
+        dim_value = 5
 
     id = models.BigAutoField(primary_key=True, verbose_name="自增键")
     type = models.IntegerField(choices=MetaType.choices, verbose_name="元数据类型.1:业务线;2:指标词根")
     value = models.CharField(max_length=30, verbose_name="元数据英文KEY")
     label = models.CharField(max_length=30, verbose_name="元数据中文值", default=None)
+    parent_id = models.BigIntegerField("父级ID", default=0);
     create_by = models.CharField(max_length=150, verbose_name="创建人")
     create_time = models.DateTimeField('创建时间', auto_created=True)
     modify_by = models.CharField(max_length=150, verbose_name="更新人")

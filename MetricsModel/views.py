@@ -21,14 +21,20 @@ def metric_list(request):
     return JsonResponse(return_data, safe=False)
 
 
-def get_meta_info(type=MetaInfoModel.MetaType):
+def get_meta_info(type=MetaInfoModel.MetaType, value=None):
     """
     获取元数据信息
+    :param value: 维度值信息
     :arg type 元数据类型
     """
-    meta_business = MetaInfoModel.objects.filter(type=type)
+    if type == MetaInfoModel.MetaType.dim_value:
+        parent_id = MetaInfoModel.objects.get(type=MetaInfoModel.MetaType.dim, value=value).id
+        meta_business = MetaInfoModel.objects.filter(type=type, parent_id=parent_id)
+    else:
+        meta_business = MetaInfoModel.objects.filter(type=type)
     serializer = MetaInfoSerializer(meta_business, many=True)
     data = serializer.data
+    print(data)
     return JsonResponse({
         "data": {
             "list": data
@@ -46,6 +52,11 @@ def meta(request):
         return get_meta_info(MetaInfoModel.MetaType.metrics)
     elif type == "time_cycle":
         return get_meta_info(MetaInfoModel.MetaType.time_cycle)
+    elif type == "dim":
+        return get_meta_info(MetaInfoModel.MetaType.dim)
+    elif type == "dim_value":
+        value = request.GET.get("value")
+        return get_meta_info(MetaInfoModel.MetaType.dim_value, value)
     return JsonResponse({
         "data": {
             "list": [{
