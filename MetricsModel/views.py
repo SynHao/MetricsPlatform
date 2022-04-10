@@ -28,13 +28,16 @@ def get_meta_info(type=MetaInfoModel.MetaType, value=None):
     :arg type 元数据类型
     """
     if type == MetaInfoModel.MetaType.dim_value:
-        parent_id = MetaInfoModel.objects.get(type=MetaInfoModel.MetaType.dim, value=value).id
-        meta_business = MetaInfoModel.objects.filter(type=type, parent_id=parent_id)
+        parent = MetaInfoModel.objects.get(type=MetaInfoModel.MetaType.dim, value=value)
+        meta_business = MetaInfoModel.objects.filter(type=type, parent_id=parent.id)
+        serializer = MetaInfoSerializer(meta_business, many=True)
+        data = serializer.data
+        for d in data:
+            d['parent'] = value
     else:
         meta_business = MetaInfoModel.objects.filter(type=type)
-    serializer = MetaInfoSerializer(meta_business, many=True)
-    data = serializer.data
-    print(data)
+        serializer = MetaInfoSerializer(meta_business, many=True)
+        data = serializer.data
     return JsonResponse({
         "data": {
             "list": data
