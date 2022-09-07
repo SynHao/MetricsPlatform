@@ -20,6 +20,12 @@ from MetricsModel import views
 from Sql import views as sql_views
 
 urlpatterns = [
+    path('config/dictionary', views.getDict),
+    path('analysis/dataMartList', views.getDMList),
+
+    path('menu/menulist', views.getMenuList),
+
+
     path('admin/', admin.site.urls),
     path('meta/', views.meta),
 
